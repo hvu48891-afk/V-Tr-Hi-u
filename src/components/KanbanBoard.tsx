@@ -3,21 +3,15 @@ import TaskCard from './TaskCard';
 import { useTasks, TaskStatus, TaskPriority, Task } from '../hooks/useTasks';
 import { useState, useEffect } from 'react';
 import { useUIStore } from '../store/uiStore';
+import { useNotificationStore } from '../store/notificationStore';
 
 export default function KanbanBoard() {
   const { tasks, loading, error, addTask, updateTaskStatus, deleteTask } = useTasks();
   const { isAddingTask, setIsAddingTask, searchQuery } = useUIStore();
+  const { showNotification } = useNotificationStore();
   const [newTask, setNewTask] = useState({ title: '', description: '', priority: 'Medium' as TaskPriority });
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
-  const [notification, setNotification] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (notification) {
-      const timer = setTimeout(() => setNotification(null), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [notification]);
 
   const filteredTasks = tasks.filter(task => 
     task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -70,7 +64,7 @@ export default function KanbanBoard() {
           <button 
             onClick={() => {
               navigator.clipboard.writeText(window.location.href);
-              setNotification('Board link copied to clipboard!');
+              showNotification('Board link copied to clipboard!', 'success');
             }}
             className="bg-surface-container-high text-primary px-6 py-2.5 rounded-full text-sm font-bold hover:bg-surface-container-highest transition-all flex items-center gap-2"
           >
@@ -102,7 +96,7 @@ export default function KanbanBoard() {
                     <Plus size={20} />
                   </button>
                   <button 
-                    onClick={() => setNotification(`${column.title} options coming soon!`)}
+                    onClick={() => showNotification(`${column.title} options coming soon!`, 'info')}
                     className="text-outline-variant hover:text-primary transition-colors p-1"
                   >
                     <MoreHorizontal size={20} />
@@ -237,7 +231,7 @@ export default function KanbanBoard() {
                 onClick={async () => {
                   await deleteTask(taskToDelete);
                   setTaskToDelete(null);
-                  setNotification('Task deleted successfully');
+                  showNotification('Task deleted successfully', 'success');
                 }}
                 className="flex-1 py-4 bg-red-500 text-white rounded-2xl font-bold hover:bg-red-600 transition-all shadow-lg shadow-red-200"
               >
@@ -245,16 +239,6 @@ export default function KanbanBoard() {
               </button>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Toast Notification */}
-      {notification && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-3 rounded-2xl shadow-2xl z-[200] animate-in slide-in-from-bottom-4 duration-300 flex items-center gap-3">
-          <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center">
-            <CheckCircle2 size={12} />
-          </div>
-          <span className="text-sm font-bold">{notification}</span>
         </div>
       )}
 

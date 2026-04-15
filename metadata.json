@@ -1,5 +1,5 @@
 {
   "name": "Monolith Task",
   "description": "A premium architectural task management hub with a minimalist design.",
-  "requestFramePermissions": []
+  "requestFramePermissions": ["identity-credentials-get"]
 }

@@ -1,19 +1,31 @@
 import { Search, Bell, Settings, LogOut, Plus } from 'lucide-react';
 import { useUIStore } from '../store/uiStore';
+import { useNotificationStore } from '../store/notificationStore';
+import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabaseClient';
 import { useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
 
 export default function TopBar() {
-  const { searchQuery, setSearchQuery, setIsGlobalAddingTask } = useUIStore();
-  const [user, setUser] = useState<User | null>(null);
+  const { searchQuery, setSearchQuery, setIsGlobalAddingTask, setCurrentView } = useUIStore();
+  const { showNotification } = useNotificationStore();
+  const { user: customUser, logout: customLogout } = useAuthStore();
+  const [supabaseUser, setSupabaseUser] = useState<User | null>(null);
+
+  const user = supabaseUser || customUser;
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
+    supabase.auth.getUser().then(({ data: { user } }) => setSupabaseUser(user));
   }, []);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    if (supabaseUser) {
+      await supabase.auth.signOut();
+    }
+    if (customUser) {
+      customLogout();
+    }
+    window.location.reload(); // Refresh to clear all states
   };
 
   return (
@@ -43,13 +55,13 @@ export default function TopBar() {
         <div className="h-8 w-px bg-outline-variant/20 mx-1 hidden md:block"></div>
         <div className="flex items-center gap-2">
           <button 
-            onClick={() => alert('Notifications clicked')}
+            onClick={() => showNotification('No new notifications', 'info')}
             className="p-2.5 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-full transition-all"
           >
             <Bell size={20} />
           </button>
           <button 
-            onClick={() => alert('Settings clicked')}
+            onClick={() => setCurrentView('Settings')}
             className="p-2.5 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-full transition-all"
           >
             <Settings size={20} />
@@ -59,7 +71,7 @@ export default function TopBar() {
         <div className="flex items-center gap-4 pl-4 border-l border-outline-variant/10">
           <div className="text-right hidden sm:block">
             <p className="text-sm font-bold text-primary leading-none mb-1">
-              {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
+              {supabaseUser?.user_metadata?.full_name || (customUser as any)?.name || user?.email?.split('@')[0] || 'User'}
             </p>
             <p className="text-[10px] font-bold text-on-surface-variant/40 uppercase tracking-widest">
               Architect
@@ -67,7 +79,7 @@ export default function TopBar() {
           </div>
           <div className="relative group">
             <img
-              src={`https://ui-avatars.com/api/?name=${user?.email}&background=001736&color=fff`}
+              src={(customUser as any)?.picture || `https://ui-avatars.com/api/?name=${user?.email}&background=001736&color=fff`}
               alt="User"
               className="w-10 h-10 rounded-2xl object-cover border-2 border-surface-container-high cursor-pointer"
               referrerPolicy="no-referrer"

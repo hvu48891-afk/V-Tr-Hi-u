@@ -1,6 +1,7 @@
 import { useState, FormEvent } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { DraftingCompass, Mail, Lock, User, ArrowRight } from 'lucide-react';
+import GoogleLoginButton from './GoogleLoginButton';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -158,6 +159,8 @@ export default function Auth() {
               <span className="text-[10px] font-bold text-on-surface-variant/30 uppercase tracking-widest">OR</span>
               <div className="h-px bg-outline-variant/10 flex-1"></div>
             </div>
+
+            <GoogleLoginButton />
 
             <button
               onClick={handleGuestLogin}
