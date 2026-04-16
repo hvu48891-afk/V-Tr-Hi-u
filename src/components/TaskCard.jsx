@@ -1,19 +1,5 @@
 import { Calendar, MessageSquare, History, CheckCircle2, GripVertical, Clock } from 'lucide-react';
 
-interface TaskCardProps {
-  id: string;
-  title: string;
-  description: string;
-  priority: 'High' | 'Medium' | 'Low';
-  date?: string;
-  assignees: string[];
-  progress?: number;
-  comments?: number;
-  completed?: boolean;
-  statusText?: string;
-  onClick?: () => void;
-}
-
 export default function TaskCard({
   title,
   description,
@@ -25,7 +11,7 @@ export default function TaskCard({
   completed,
   statusText,
   onClick,
-}: TaskCardProps) {
+}) {
   const priorityStyles = {
     High: 'bg-[#5e0022] text-[#ffb2be]',
     Medium: 'bg-[#c6e4f4] text-[#4a6774]',
@@ -90,7 +76,7 @@ export default function TaskCard({
         </div>
         
         <div className="flex -space-x-2">
-          {assignees.length > 0 ? (
+          {assignees && assignees.length > 0 ? (
             assignees.map((src, i) => (
               <img
                 key={i}

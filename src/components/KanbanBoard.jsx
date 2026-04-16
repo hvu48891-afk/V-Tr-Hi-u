@@ -1,6 +1,6 @@
 import { MoreHorizontal, Share2, Archive, Plus, Trash2, ArrowRight, ArrowLeft, X, CheckCircle2 } from 'lucide-react';
 import TaskCard from './TaskCard';
-import { useTasks, TaskStatus, TaskPriority, Task } from '../hooks/useTasks';
+import { useTasks } from '../hooks/useTasks';
 import { useState, useEffect } from 'react';
 import { useUIStore } from '../store/uiStore';
 import { useNotificationStore } from '../store/notificationStore';
@@ -9,23 +9,23 @@ export default function KanbanBoard() {
   const { tasks, loading, error, addTask, updateTaskStatus, deleteTask } = useTasks();
   const { isAddingTask, setIsAddingTask, searchQuery } = useUIStore();
   const { showNotification } = useNotificationStore();
-  const [newTask, setNewTask] = useState({ title: '', description: '', priority: 'Medium' as TaskPriority });
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
+  const [newTask, setNewTask] = useState({ title: '', description: '', priority: 'Medium' });
+  const [editingTask, setEditingTask] = useState(null);
+  const [taskToDelete, setTaskToDelete] = useState(null);
 
   const filteredTasks = tasks.filter(task => 
     task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     task.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleAddTask = async (status: TaskStatus) => {
+  const handleAddTask = async (status) => {
     if (!newTask.title) return;
     await addTask({ ...newTask, status });
     setNewTask({ title: '', description: '', priority: 'Medium' });
     setIsAddingTask(null);
   };
 
-  const columns: { id: TaskStatus; title: string }[] = [
+  const columns = [
     { id: 'todo', title: 'Cần làm' },
     { id: 'doing', title: 'Đang làm' },
     { id: 'done', title: 'Hoàn thành' },
@@ -126,7 +126,7 @@ export default function KanbanBoard() {
                       <select
                         className="text-[10px] font-bold uppercase tracking-widest bg-surface-container-high border-none rounded-md px-2 py-1 focus:ring-0"
                         value={newTask.priority}
-                        onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as TaskPriority })}
+                        onChange={(e) => setNewTask({ ...newTask, priority: e.target.value })}
                       >
                         <option value="Low">Low</option>
                         <option value="Medium">Medium</option>
@@ -283,7 +283,7 @@ export default function KanbanBoard() {
                     <select 
                       className="w-full bg-surface-container-low border-none rounded-xl p-4 text-sm font-bold text-primary focus:ring-2 focus:ring-primary/10"
                       value={editingTask.priority}
-                      onChange={(e) => setEditingTask({ ...editingTask, priority: e.target.value as TaskPriority })}
+                      onChange={(e) => setEditingTask({ ...editingTask, priority: e.target.value })}
                     >
                       <option value="Low">Low</option>
                       <option value="Medium">Medium</option>
@@ -295,7 +295,7 @@ export default function KanbanBoard() {
                     <select 
                       className="w-full bg-surface-container-low border-none rounded-xl p-4 text-sm font-bold text-primary focus:ring-2 focus:ring-primary/10"
                       value={editingTask.status}
-                      onChange={(e) => setEditingTask({ ...editingTask, status: e.target.value as TaskStatus })}
+                      onChange={(e) => setEditingTask({ ...editingTask, status: e.target.value })}
                     >
                       <option value="todo">To Do</option>
                       <option value="doing">Doing</option>
@@ -315,7 +315,6 @@ export default function KanbanBoard() {
                 <button 
                   onClick={async () => {
                     await updateTaskStatus(editingTask.id, editingTask.status);
-                    // In a real app we'd update all fields, but for this demo we'll just close
                     setEditingTask(null);
                   }}
                   className="flex-1 py-4 bg-primary text-white rounded-full font-bold hover:bg-primary-container transition-all shadow-lg shadow-primary/20"

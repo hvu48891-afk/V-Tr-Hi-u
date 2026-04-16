@@ -1,21 +1,8 @@
-import { useState, FormEvent, MouseEvent } from 'react';
-import { Mail, Phone, MapPin, Briefcase, Calendar, X, ExternalLink, Plus, Trash2, UserPlus, CheckCircle2 } from 'lucide-react';
+import { useState } from 'react';
+import { Mail, Phone, MapPin, Briefcase, Calendar, X, ExternalLink, Plus, Trash2, UserPlus } from 'lucide-react';
 import { useUIStore } from '../store/uiStore';
 
-interface Member {
-  id: string;
-  name: string;
-  role: string;
-  email: string;
-  phone: string;
-  location: string;
-  bio: string;
-  avatar: string;
-  joinedDate: string;
-  projects: number;
-}
-
-const INITIAL_MEMBERS: Member[] = [
+const INITIAL_MEMBERS = [
   {
     id: '1',
     name: 'Alex Rivera',
@@ -56,11 +43,11 @@ const INITIAL_MEMBERS: Member[] = [
 
 export default function Team() {
   const { searchQuery } = useUIStore();
-  const [members, setMembers] = useState<Member[]>(INITIAL_MEMBERS);
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [members, setMembers] = useState(INITIAL_MEMBERS);
+  const [selectedMember, setSelectedMember] = useState(null);
   const [isAddingMember, setIsAddingMember] = useState(false);
-  const [editingMember, setEditingMember] = useState<Member | null>(null);
-  const [memberToDelete, setMemberToDelete] = useState<string | null>(null);
+  const [editingMember, setEditingMember] = useState(null);
+  const [memberToDelete, setMemberToDelete] = useState(null);
 
   const filteredMembers = members.filter(member => 
     member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -74,9 +61,9 @@ export default function Team() {
     location: '',
   });
 
-  const handleAddMember = (e: FormEvent) => {
+  const handleAddMember = (e) => {
     e.preventDefault();
-    const member: Member = {
+    const member = {
       id: Math.random().toString(36).substr(2, 9),
       name: newMember.name,
       role: newMember.role,
@@ -93,7 +80,7 @@ export default function Team() {
     setNewMember({ name: '', role: '', email: '', location: '' });
   };
 
-  const handleUpdateMember = (e: FormEvent) => {
+  const handleUpdateMember = (e) => {
     e.preventDefault();
     if (!editingMember) return;
     setMembers(members.map(m => m.id === editingMember.id ? editingMember : m));
@@ -101,7 +88,7 @@ export default function Team() {
     setEditingMember(null);
   };
 
-  const handleDeleteMember = (id: string, e: MouseEvent) => {
+  const handleDeleteMember = (id, e) => {
     e.stopPropagation();
     setMemberToDelete(id);
   };

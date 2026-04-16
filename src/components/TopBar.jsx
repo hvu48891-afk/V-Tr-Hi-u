@@ -4,13 +4,12 @@ import { useNotificationStore } from '../store/notificationStore';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabaseClient';
 import { useEffect, useState } from 'react';
-import { User } from '@supabase/supabase-js';
 
 export default function TopBar() {
   const { searchQuery, setSearchQuery, setIsGlobalAddingTask, setCurrentView } = useUIStore();
   const { showNotification } = useNotificationStore();
   const { user: customUser, logout: customLogout } = useAuthStore();
-  const [supabaseUser, setSupabaseUser] = useState<User | null>(null);
+  const [supabaseUser, setSupabaseUser] = useState(null);
 
   const user = supabaseUser || customUser;
 
@@ -32,7 +31,7 @@ export default function TopBar() {
     <header className="flex justify-between items-center px-8 w-full sticky top-0 z-40 bg-surface/80 backdrop-blur-md h-20 border-b border-outline-variant/5">
       <div className="flex items-center gap-8 flex-1">
         <span className="text-2xl font-bold text-primary tracking-tight font-headline">Monolith Task</span>
-        <div className="hidden lg:flex items-center bg-surface-container-low rounded-full px-5 py-2.5 w-full max-w-md border border-transparent focus-within:border-outline-variant/30 transition-all">
+        <div className="hidden lg:flex items-center bg-surface-container-low rounded-full px-5 py-2.5 w-full max-md border border-transparent focus-within:border-outline-variant/30 transition-all">
           <Search size={18} className="text-on-surface-variant/50" />
           <input
             type="text"
@@ -71,7 +70,7 @@ export default function TopBar() {
         <div className="flex items-center gap-4 pl-4 border-l border-outline-variant/10">
           <div className="text-right hidden sm:block">
             <p className="text-sm font-bold text-primary leading-none mb-1">
-              {supabaseUser?.user_metadata?.full_name || (customUser as any)?.name || user?.email?.split('@')[0] || 'User'}
+              {supabaseUser?.user_metadata?.full_name || customUser?.name || user?.email?.split('@')[0] || 'User'}
             </p>
             <p className="text-[10px] font-bold text-on-surface-variant/40 uppercase tracking-widest">
               Architect
@@ -79,7 +78,7 @@ export default function TopBar() {
           </div>
           <div className="relative group">
             <img
-              src={(customUser as any)?.picture || `https://ui-avatars.com/api/?name=${user?.email}&background=001736&color=fff`}
+              src={customUser?.picture || `https://ui-avatars.com/api/?name=${user?.email}&background=001736&color=fff`}
               alt="User"
               className="w-10 h-10 rounded-2xl object-cover border-2 border-surface-container-high cursor-pointer"
               referrerPolicy="no-referrer"

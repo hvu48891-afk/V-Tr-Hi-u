@@ -9,29 +9,15 @@ export default function GoogleLoginButton() {
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       try {
-        // In this flow, we get an access token, but the backend expects a credential (ID Token).
-        // However, @react-oauth/google's useGoogleLogin (implicit flow) returns an access token.
-        // To get an ID Token, we'd need the 'auth-code' flow or use the standard <GoogleLogin /> component.
-        // Let's try to fetch user info directly from Google if the backend verification fails,
-        // or update the backend to handle access tokens.
-        
-        // For simplicity and to match the user's backend request, 
-        // let's stick to the <GoogleLogin /> component but fix the iframe issues.
-        // Actually, let's use the fetch approach to get user info if we have an access token.
-        
         const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
         });
         const googleUser = await res.json();
 
-        // Now send this info to our backend to "sync" or just log in locally
         const response = await fetch('/api/auth/google', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
-            // We simulate the credential by sending the user info directly 
-            // or we could modify the backend to accept access tokens.
-            // For now, let's just log in locally to ensure the user can enter the app.
             mockUser: googleUser 
           }),
         });

@@ -1,19 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '../lib/supabaseClient';
-import { Task, TaskStatus, TaskPriority } from '../hooks/useTasks';
 
-interface TaskStore {
-  tasks: Task[];
-  loading: boolean;
-  error: string | null;
-  fetchTasks: () => Promise<void>;
-  addTask: (task: Omit<Task, 'id' | 'created_at'>) => Promise<Task | undefined>;
-  updateTaskStatus: (id: string, status: TaskStatus) => Promise<void>;
-  deleteTask: (id: string) => Promise<void>;
-  setTasks: (tasks: Task[]) => void;
-}
-
-export const useTaskStore = create<TaskStore>((set, get) => ({
+export const useTaskStore = create((set, get) => ({
   tasks: [],
   loading: true,
   error: null,
@@ -30,7 +18,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 
       if (error) throw error;
       set({ tasks: data || [], error: null });
-    } catch (err: any) {
+    } catch (err) {
       set({ error: err.message });
     } finally {
       set({ loading: false });
@@ -49,7 +37,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         set((state) => ({ tasks: [data[0], ...state.tasks] }));
       }
       return data?.[0];
-    } catch (err: any) {
+    } catch (err) {
       set({ error: err.message });
       throw err;
     }
@@ -66,7 +54,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       set((state) => ({
         tasks: state.tasks.map((t) => (t.id === id ? { ...t, status } : t)),
       }));
-    } catch (err: any) {
+    } catch (err) {
       set({ error: err.message });
       throw err;
     }
@@ -83,7 +71,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       set((state) => ({
         tasks: state.tasks.filter((t) => t.id !== id),
       }));
-    } catch (err: any) {
+    } catch (err) {
       set({ error: err.message });
       throw err;
     }

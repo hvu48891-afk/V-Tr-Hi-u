@@ -12,7 +12,7 @@ const PORT = 3000;
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Mock Database
-const usersDB: any[] = [];
+const usersDB = [];
 
 app.use(cors());
 app.use(express.json());
@@ -22,7 +22,7 @@ app.post("/api/auth/google", async (req, res) => {
   const { credential, mockUser } = req.body;
 
   try {
-    let payload: any;
+    let payload;
 
     if (credential) {
       const ticket = await client.verifyIdToken({

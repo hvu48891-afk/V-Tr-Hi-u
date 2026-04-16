@@ -1,7 +1,7 @@
 import { useState, FormEvent } from 'react';
 import { X, Plus, Save } from 'lucide-react';
 import { useUIStore } from '../store/uiStore';
-import { useTasks, TaskPriority, TaskStatus } from '../hooks/useTasks';
+import { useTasks } from '../hooks/useTasks';
 
 export default function CreateTaskModal() {
   const { isGlobalAddingTask, setIsGlobalAddingTask } = useUIStore();
@@ -9,14 +9,14 @@ export default function CreateTaskModal() {
   const [task, setTask] = useState({
     title: '',
     description: '',
-    priority: 'Medium' as TaskPriority,
-    status: 'todo' as TaskStatus
+    priority: 'Medium',
+    status: 'todo'
   });
   const [loading, setLoading] = useState(false);
 
   if (!isGlobalAddingTask) return null;
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!task.title) return;
     
@@ -77,7 +77,7 @@ export default function CreateTaskModal() {
                 <select 
                   className="w-full bg-surface-container-low border-none rounded-2xl p-4 text-sm font-bold text-primary focus:ring-2 focus:ring-primary/10"
                   value={task.priority}
-                  onChange={(e) => setTask({ ...task, priority: e.target.value as TaskPriority })}
+                  onChange={(e) => setTask({ ...task, priority: e.target.value })}
                 >
                   <option value="Low">Low</option>
                   <option value="Medium">Medium</option>
@@ -89,7 +89,7 @@ export default function CreateTaskModal() {
                 <select 
                   className="w-full bg-surface-container-low border-none rounded-2xl p-4 text-sm font-bold text-primary focus:ring-2 focus:ring-primary/10"
                   value={task.status}
-                  onChange={(e) => setTask({ ...task, status: e.target.value as TaskStatus })}
+                  onChange={(e) => setTask({ ...task, status: e.target.value })}
                 >
                   <option value="todo">To Do</option>
                   <option value="doing">Doing</option>

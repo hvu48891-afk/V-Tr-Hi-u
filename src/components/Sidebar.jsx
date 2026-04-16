@@ -1,12 +1,11 @@
 import { LayoutGrid, CheckSquare, Users, BarChart3, Archive, HelpCircle, LogOut, Plus, DraftingCompass, Settings as SettingsIcon } from 'lucide-react';
-import { useUIStore, ViewType } from '../store/uiStore';
-import { useState } from 'react';
+import { useUIStore } from '../store/uiStore';
 
 export default function Sidebar() {
   const setIsAddingTask = useUIStore((state) => state.setIsAddingTask);
   const { currentView, setCurrentView } = useUIStore();
 
-  const navItems: { icon: any; label: ViewType }[] = [
+  const navItems = [
     { icon: LayoutGrid, label: 'Dashboard' },
     { icon: CheckSquare, label: 'My Tasks' },
     { icon: Users, label: 'Team' },
@@ -64,9 +63,8 @@ export default function Sidebar() {
             onClick={() => {
               if (item.label === 'Sign Out') {
                 console.log('Signing out...');
-                alert('Signing out functionality would go here.');
               } else {
-                alert(`${item.label} clicked`);
+                console.log(`${item.label} clicked`);
               }
             }}
             className="flex items-center gap-3 py-3 px-4 text-on-surface-variant hover:bg-surface-container-high transition-all rounded-xl w-full text-left"

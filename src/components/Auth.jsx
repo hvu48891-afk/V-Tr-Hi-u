@@ -9,10 +9,10 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
 
-  const handleAuth = async (e: FormEvent) => {
+  const handleAuth = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -41,7 +41,7 @@ export default function Auth() {
           setSuccessMessage('Registration successful! Please check your email to confirm your account.');
         }
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Auth error:', err);
       setError(err.message || 'An unexpected error occurred');
     } finally {
@@ -51,8 +51,6 @@ export default function Auth() {
 
   const handleGuestLogin = async () => {
     setError('Guest login is for demo purposes. Please use a real account for persistent data.');
-    // In a real app, you might use anonymous auth or just a mock state
-    // For now, we'll just show this message to guide the user
   };
 
   return (
