@@ -8,6 +8,7 @@ export default function GoogleLoginButton() {
 
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
+      showNotification('Google authentication successful, fetching profile...', 'info');
       try {
         const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
@@ -22,18 +23,34 @@ export default function GoogleLoginButton() {
           }),
         });
 
+        if (!response.ok) {
+          throw new Error('Backend authentication failed');
+        }
+
         const data = await response.json();
         setUser(data.user);
         showNotification(`Welcome, ${data.user.name}!`, 'success');
       } catch (error) {
         console.error('Login Error:', error);
-        showNotification('Login failed. Please try again.', 'error');
+        showNotification('Login failed: ' + (error.message || 'Unknown error'), 'error');
       }
     },
-    onError: () => {
-      showNotification('Google Login Failed', 'error');
+    onError: (error) => {
+      console.error('Google Login Error:', error);
+      showNotification('Google Login Failed. Check console for details.', 'error');
     },
   });
+
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+  if (!clientId) {
+    return (
+      <div className="w-full mt-4 p-3 bg-amber-50 border border-amber-100 rounded-2xl text-center">
+        <p className="text-[10px] font-bold text-amber-700 uppercase tracking-widest">Google Auth Not Configured</p>
+        <p className="text-[9px] text-amber-600 mt-1">Please set VITE_GOOGLE_CLIENT_ID in your .env file</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center w-full mt-4">

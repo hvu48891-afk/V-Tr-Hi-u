@@ -1,9 +1,12 @@
 import { LayoutGrid, CheckSquare, Users, BarChart3, Archive, HelpCircle, LogOut, Plus, DraftingCompass, Settings as SettingsIcon } from 'lucide-react';
 import { useUIStore } from '../store/uiStore';
+import { useAuthStore } from '../store/authStore';
+import { supabase } from '../lib/supabaseClient';
 
 export default function Sidebar() {
   const setIsAddingTask = useUIStore((state) => state.setIsAddingTask);
   const { currentView, setCurrentView } = useUIStore();
+  const { logout } = useAuthStore();
 
   const navItems = [
     { icon: LayoutGrid, label: 'Dashboard' },
@@ -18,6 +21,24 @@ export default function Sidebar() {
     { icon: HelpCircle, label: 'Help' },
     { icon: LogOut, label: 'Sign Out' },
   ];
+
+  const handleSignOut = async () => {
+    // 1. Supabase Sign Out
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error('Supabase sign out error:', err);
+    }
+
+    // 2. Custom Auth Store Sign Out
+    logout();
+
+    // 3. Clear any other session data
+    localStorage.clear();
+
+    // 4. Redirect/Reload
+    window.location.href = '/';
+  };
 
   return (
     <aside className="hidden md:flex flex-col h-screen w-64 sticky top-0 py-8 px-6 gap-8 bg-surface border-r border-outline-variant/10">
@@ -62,7 +83,7 @@ export default function Sidebar() {
             key={item.label}
             onClick={() => {
               if (item.label === 'Sign Out') {
-                console.log('Signing out...');
+                handleSignOut();
               } else {
                 console.log(`${item.label} clicked`);
               }

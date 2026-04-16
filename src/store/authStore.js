@@ -8,6 +8,7 @@ export const useAuthStore = create((set) => ({
   },
   logout: () => {
     localStorage.removeItem('auth_user');
+    localStorage.removeItem('is_guest');
     set({ user: null });
   },
 }));

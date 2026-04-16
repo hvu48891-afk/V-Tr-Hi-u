@@ -6,19 +6,45 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check active sessions and sets the user
+    let mounted = true;
+
+    // Safety timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      if (mounted && loading) {
+        console.warn('Auth check timed out, proceeding...');
+        setLoading(false);
+      }
+    }, 2000);
+
+    // Check active sessions
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
+      if (mounted) {
+        setUser(session?.user ?? null);
+        setLoading(false);
+        clearTimeout(timeoutId);
+      }
+    }).catch(err => {
+      console.error('Session check error:', err);
+      if (mounted) {
+        setLoading(false);
+        clearTimeout(timeoutId);
+      }
     });
 
-    // Listen for changes on auth state (logged in, signed out, etc.)
+    // Listen for changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
+      if (mounted) {
+        setUser(session?.user ?? null);
+        setLoading(false);
+        clearTimeout(timeoutId);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      clearTimeout(timeoutId);
+      subscription.unsubscribe();
+    };
   }, []);
 
   return { user, loading };

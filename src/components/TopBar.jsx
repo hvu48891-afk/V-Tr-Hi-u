@@ -18,13 +18,14 @@ export default function TopBar() {
   }, []);
 
   const handleSignOut = async () => {
-    if (supabaseUser) {
+    try {
       await supabase.auth.signOut();
+    } catch (err) {
+      console.error('Supabase sign out error:', err);
     }
-    if (customUser) {
-      customLogout();
-    }
-    window.location.reload(); // Refresh to clear all states
+    customLogout();
+    localStorage.clear();
+    window.location.href = '/';
   };
 
   return (

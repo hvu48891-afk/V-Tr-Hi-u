@@ -1,6 +1,7 @@
 import { useState, FormEvent } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { DraftingCompass, Mail, Lock, User, ArrowRight } from 'lucide-react';
+import { useAuthStore } from '../store/authStore';
 import GoogleLoginButton from './GoogleLoginButton';
 
 export default function Auth() {
@@ -49,8 +50,23 @@ export default function Auth() {
     }
   };
 
-  const handleGuestLogin = async () => {
-    setError('Guest login is for demo purposes. Please use a real account for persistent data.');
+  const handleGuestLogin = () => {
+    const guestUser = {
+      id: 'guest-' + Math.random().toString(36).substr(2, 9),
+      name: 'Guest Architect',
+      email: 'guest@example.com',
+      picture: 'https://ui-avatars.com/api/?name=Guest+Architect&background=001736&color=fff'
+    };
+    
+    // Use the auth store to set the user
+    const { setUser } = useAuthStore.getState();
+    setUser(guestUser);
+    
+    // Also set a flag in localStorage to indicate guest mode
+    localStorage.setItem('is_guest', 'true');
+    
+    // Force a reload or state update
+    window.location.reload();
   };
 
   return (
@@ -120,7 +136,11 @@ export default function Auth() {
 
             {error && (
               <div className="bg-red-50 border border-red-100 p-4 rounded-2xl mb-4 animate-in fade-in slide-in-from-top-2">
-                <p className="text-red-600 text-xs font-bold leading-relaxed">{error}</p>
+                <p className="text-red-600 text-xs font-bold leading-relaxed">
+                  {error.includes('identity-credentials-get') 
+                    ? 'Google Login is restricted in this preview. Please use Email/Password or Guest Login.' 
+                    : error}
+                </p>
               </div>
             )}
 

@@ -9,7 +9,8 @@ dotenv.config();
 
 const app = express();
 const PORT = 3000;
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const client = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null;
 
 // Mock Database
 const usersDB = [];
@@ -20,6 +21,10 @@ app.use(express.json());
 // API Routes
 app.post("/api/auth/google", async (req, res) => {
   const { credential, mockUser } = req.body;
+
+  if (!client && credential) {
+    return res.status(500).json({ error: "Google Auth not configured on server" });
+  }
 
   try {
     let payload;
