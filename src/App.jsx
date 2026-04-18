@@ -4,6 +4,7 @@ import KanbanBoard from './components/KanbanBoard';
 import Dashboard from './components/Dashboard';
 import Team from './components/Team';
 import Settings from './components/Settings';
+import Analytics from './components/Analytics';
 import CreateTaskModal from './components/CreateTaskModal';
 import Auth from './components/Auth';
 import { useAuth } from './hooks/useAuth';
@@ -51,6 +52,8 @@ export default function App() {
         return <Dashboard />;
       case 'Team':
         return <Team />;
+      case 'Analytics':
+        return <Analytics />;
       case 'Settings':
         return <Settings />;
       case 'My Tasks':
