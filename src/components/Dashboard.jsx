@@ -4,11 +4,16 @@ import { useTaskStore } from '../store/taskStore';
 export default function Dashboard() {
   const { tasks } = useTaskStore();
 
+  const completedTasks = tasks.filter(t => t.status === 'done').length;
+  const inProgressTasks = tasks.filter(t => t.status === 'in-progress').length;
+  const todoTasks = tasks.filter(t => t.status === 'todo').length;
+  const completionRate = tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0;
+
   const stats = [
     { label: 'Total Tasks', value: tasks.length, icon: CheckSquare, color: 'bg-blue-500' },
-    { label: 'Active Team', value: '12', icon: Users, color: 'bg-purple-500' },
-    { label: 'Completion Rate', value: '84%', icon: TrendingUp, color: 'bg-green-500' },
-    { label: 'Avg. Cycle Time', value: '3.2d', icon: Clock, color: 'bg-orange-500' },
+    { label: 'In Progress', value: inProgressTasks, icon: Clock, color: 'bg-orange-500' },
+    { label: 'Completed', value: completedTasks, icon: TrendingUp, color: 'bg-green-500' },
+    { label: 'Todo', value: todoTasks, icon: LayoutGrid, color: 'bg-purple-500' },
   ];
 
   const recentTasks = tasks.slice(0, 5);
@@ -54,7 +59,9 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest ${
-                    task.status === 'done' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                    task.status === 'done' ? 'bg-green-100 text-green-700' : 
+                    task.status === 'in-progress' ? 'bg-orange-100 text-orange-700' : 
+                    'bg-blue-100 text-blue-700'
                   }`}>
                     {task.status}
                   </span>
@@ -73,24 +80,24 @@ export default function Dashboard() {
         <div className="bg-primary text-white rounded-[2.5rem] p-8 shadow-xl shadow-primary/20 relative overflow-hidden">
           <div className="relative z-10">
             <h3 className="text-xl font-bold mb-4">Project Health</h3>
-            <p className="text-white/60 text-sm mb-8 leading-relaxed">Your team is performing 15% better than last week. Keep up the great work!</p>
+            <p className="text-white/60 text-sm mb-8 leading-relaxed">Dashboard metrics are live. Currently {completedTasks} out of {tasks.length} tasks completed.</p>
             <div className="space-y-6">
               <div>
                 <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest mb-2">
-                  <span>Design Phase</span>
-                  <span>90%</span>
+                  <span>Overall Progress</span>
+                  <span>{completionRate}%</span>
                 </div>
                 <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-white w-[90%]" />
+                  <div className="h-full bg-white transition-all duration-1000" style={{ width: `${completionRate}%` }} />
                 </div>
               </div>
               <div>
                 <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest mb-2">
-                  <span>Development</span>
-                  <span>45%</span>
+                  <span>In Progress</span>
+                  <span>{tasks.length > 0 ? Math.round((inProgressTasks / tasks.length) * 100) : 0}%</span>
                 </div>
                 <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-white w-[45%]" />
+                  <div className="h-full bg-white/40 transition-all duration-1000" style={{ width: `${tasks.length > 0 ? (inProgressTasks / tasks.length) * 100 : 0}%` }} />
                 </div>
               </div>
             </div>
